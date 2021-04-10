@@ -56,8 +56,21 @@ Case analysis
 ```
 
 
+# Lec 2 - Procedures and Processes; Substitution Model
+```lisp
+(define (sos x y)
+    (+ (sq x) (sq y)))
 
+(define (sq x )
+    ( * x x ))
+```
 
+Kind of expressions:
+- Numbers
+- Symbols
+- Combination
+- Lambda expressoins
+- Definition
 
 
 
