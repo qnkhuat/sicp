@@ -10,11 +10,6 @@
     a
     (gcd b (remainder a b))))
 
-; Utilities
-(define (abs x)
-  (if (< x 0) (- x) x))
-
-
 (define (make-rat n d)
   (define (norm-sign n d)
     (cond ((and (< n 0) (< d 0)) +)
@@ -110,7 +105,7 @@
 
 
 
-; 2.4
+; E.x: 2.4
 (define (cons x y)
   (lambda (m) (m x y)))
 
@@ -124,6 +119,22 @@
 
 
 ; E.x: 2.5
+(define (cons a b)
+  (* (expt 2 a) (expt 3 b)))
+
+(define (count-till-indivisible count num dividend)
+  (if (= (remainder num dividend) 0)
+    (count-till-indivisible (+ 1 count) (/ num dividend) dividend)
+    count))
+
+(define (car z)
+  (count-till-indivisible 0 z 2))
+
+(define (cdr z)
+  (count-till-indivisible 0 z 3))
+
+
+; E.x: 2.6
 
 (define zero (lambda (f) (lambda (x) x)))
 (define (add-1 n)
