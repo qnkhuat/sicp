@@ -1,5 +1,5 @@
 ; Buildling abstractions with Data
-(define f "ex2.scm")
+(define f "lec2.scm")
 (define l load)
 
 (l "util.scm")
@@ -106,16 +106,16 @@
 
 
 ; E.x: 2.4
-(define (cons x y)
-  (lambda (m) (m x y)))
-
-(define (car z)
-  (z (lambda (p q) p)))
-
-(define (cdr z)
-  (z (lambda (p q) q)))
-
-(car (cons 3 4))
+;(define (cons x y)
+;  (lambda (m) (m x y)))
+;
+;(define (car z)
+;  (z (lambda (p q) p)))
+;
+;(define (cdr z)
+;  (z (lambda (p q) q)))
+;
+;(car (cons 3 4))
 
 
 ; E.x: 2.5
@@ -127,11 +127,11 @@
     (count-till-indivisible (+ 1 count) (/ num dividend) dividend)
     count))
 
-(define (car z)
-  (count-till-indivisible 0 z 2))
-
-(define (cdr z)
-  (count-till-indivisible 0 z 3))
+;(define (car z)
+;  (count-till-indivisible 0 z 2))
+;
+;(define (cdr z)
+;  (count-till-indivisible 0 z 3))
 
 
 ; E.x: 2.6
@@ -173,10 +173,19 @@
   (make-interval (- (lower-bound x) (lower-bound y))
                  (- (upper-bound x) (upper-bound y))))
 
+; 2.2 Hierarchical Data and the Closure Property
+(define one-to-four (list 1 2 3 4)) ; list is a chains of cons
+;(display (list-ref one-to-four 3)) ; get the 3rd elem. It's also built-in
+(define (list-ref items n)
+  (if (= n 0)
+      (car items)
+      (list-ref (cdr items) (- n 1))))
 
-
-
-
+;(display (length one-to-for)) ; length is a built-in operation
+(define (length items)
+  (if (null? items)
+      0
+      (+ 1 (length (cdr items)))))
 
 
 
