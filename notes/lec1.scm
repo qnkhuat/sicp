@@ -86,13 +86,6 @@
 (define (id x) x)
 (define product id 1 (lambda (x) (+ x 1)) 4)
 
-
-
-
-
-
-
-    
 ; 1.35
 (define tolerance 0.00001)
 

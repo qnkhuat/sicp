@@ -129,45 +129,45 @@
 ; If we look further we will see the 2 programs has a signal sequence as follow:
 ; Enumerate -> filter -> map -> accumulate
 
-(define (accumulate op initial sequence)
-  (if (null? sequence)
-      initial
-      (op (car sequence)
-          (accumulate op initial (cdr sequence)))))
-
-(define (enumerate-tree tree)
-  (cond ((null? tree) nil)
-        ((not (pair? tree)) (list tree))
-        (else (append (enumerate-tree (car tree))
-                      (enumerate-tree (cdr tree))))))
-
-(define (enumerate-interval low high)
-  (if (> low high)
-      nil
-      (cons low (enumerate-interval (+ low 1) high))))
-
-(define (sumb-odd-squares tree)
-  (accumulate +
-              nil
-              (map square (filter odd? (enumerate-tree tree)))))
-
-(define (even-fibs n)
-  (accumulate cons
-              nil
-              (filter even? (map fib (enumerate-interval 0 n)))))
-
-; E.x: 2.33
-(define (map p sequence) 
-  (accumulate (lambda (x y) (cons (p x) y)) 
-              nil 
-              sequence))
-
-(map square (list 1 2 3))
-
-(define (append seq1 seq2)
-   (accumulate cons seq1 seq2))
-
-(append (list 1 2 3) (list 4 5 6))
+;(define (accumulate op initial sequence)
+;  (if (null? sequence)
+;      initial
+;      (op (car sequence)
+;          (accumulate op initial (cdr sequence)))))
+;
+;(define (enumerate-tree tree)
+;  (cond ((null? tree) nil)
+;        ((not (pair? tree)) (list tree))
+;        (else (append (enumerate-tree (car tree))
+;                      (enumerate-tree (cdr tree))))))
+;
+;(define (enumerate-interval low high)
+;  (if (> low high)
+;      nil
+;      (cons low (enumerate-interval (+ low 1) high))))
+;
+;(define (sumb-odd-squares tree)
+;  (accumulate +
+;              nil
+;              (map square (filter odd? (enumerate-tree tree)))))
+;
+;(define (even-fibs n)
+;  (accumulate cons
+;              nil
+;              (filter even? (map fib (enumerate-interval 0 n)))))
+;
+;; E.x: 2.33
+;(define (map p sequence) 
+;  (accumulate (lambda (x y) (cons (p x) y)) 
+;              nil 
+;              sequence))
+;
+;(map square (list 1 2 3))
+;
+;(define (append seq1 seq2)
+;   (accumulate cons seq1 seq2))
+;
+;(append (list 1 2 3) (list 4 5 6))
 
 ;(define (length sequence)
 ;  (accumulate (lambda (x y) (+ 1 y)) 0 sequence))
@@ -175,28 +175,129 @@
 ;(length (list 3 2 9))
 
 
+; E.x: 2.38
+;(fold-right / 1 (list 1 2 3)); -> 3 / 2
+;(fold-left  / 1 (list 1 2 3)); -> 1 / 6
+;(fold-right cons nil (list 1 2 3)) ; -> list (1 2 3)
+;(fold-left cons nil (list 1 2 3)) ; -> list (3 2 1)
+
+; E.x 2.39
+;(define (reverse seq)
+;  (fold-left (lambda (x y) (append x (list y))) nil seq))
+;
+;(define (reverse seq)
+;  (fold-right (lambda (x y) (append (list x) y)) nil seq))
+;
+;
+;(reverse (list 1 2 3))
+
+
+; Nested mapping
+
+(define (flatmap proc seq)
+  (fold-right append nil (map proc seq)))
+;
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+;
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+;
+;(define (prime-sum-pairs n)
+;  (map make-pair-sum
+;       (filter prime-sum?
+;               (flatmap
+;                (lambda (i)
+;                  (map (lambda (j) (list i j))
+;                       (enumerate-interval 1 (- i 1))))
+;                (enumerate-interval 1 n)))))
+;
+;(prime-sum-pairs 10)
 
 
 
+; E.x: 2.40
+(define (unique-pairs n)
+  (fold-right append nil 
+              (map (lambda (i) 
+                     (map (lambda (j) (list i j)) 
+                          (enumerate-interval 1 (- i 1)))) 
+                   (enumerate-interval 1 n))))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum (filter prime-sum? (unique-pairs n))))
+
+(prime-sum-pairs 5)
 
 
+;E.x 2.42
 
+(define (make-pos r c) (list r c))
+(define (get-row p) (car p))
+(define (get-col p) (cadr p))
 
+; rest-of-queens is a list of positions to place the last 
+;
+(define empty-board nil)
+;
+(define (adjoin-position row col rest-of-queens) 
+  (cons (make-pos row col) rest-of-queens))
 
+;(queen-row (if (= (length queen-rows) 1 ) (list-ref queen-rows 0) nil))
 
+(define (get-pos-by-column col positions)
+  (let ((found-pos (filter (lambda (pos) (= (get-col pos) col)) 
+                     positions)))
+    (if (= (length found-pos) 0) 
+      nil
+      (car found-pos))
+  ))
 
+(define (display-but-return d)
+  (display "------------")
+  (newline)
+  (display d)
+  (newline)
+  d)
 
+(define (same-row target this)
+  (= (get-row target) (get-row this)))
 
+(define (same-col target this)
+  (= (get-col target) (get-col this)))
 
+(define (same-diagonal target this)
+  (let ((col-diff (- (get-col this) (get-col target))))
+    (or (= (get-row this) (+ col-diff (get-row target)))
+         (= (get-row this) (- (get-row target) col-diff)))))
 
+(define (get-queen-at-col col positions) (car(filter (lambda (pos) (= (get-col pos) col)) positions)))
+(define (get-queens-not-at-col col positions) (filter (lambda (pos) (not (= (get-col pos) col)
+                                                                         )) positions))
 
+(define (safe? col positions)
+  (let ((queen-at-col (get-queen-at-col col positions))
+        (queens-not-at-col (get-queens-not-at-col col positions)))
+    (null? (filter (lambda (queen) (or 
+                                     (same-row queen queen-at-col) 
+                                     (same-diagonal queen queen-at-col)))
+    queens-not-at-col))))
 
+ (define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
 
-
-
-
-
-
+(define q (queens 8))
 
 
 
