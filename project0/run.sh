@@ -1,0 +1,1 @@
+scheme --load basebot.scm
