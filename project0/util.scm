@@ -1,5 +1,6 @@
 ; Find square root using Newton's method
 
+(define nil '())
 (define (abs x) (if (< x 0) (- x) x))
 (define tolerance 0.01001)
 (define (good-enough? new-guess last-guess)

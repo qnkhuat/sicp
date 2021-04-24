@@ -63,21 +63,25 @@
   (square-root (- (square b) (* 4 a c))))
 
 (define (root1 a b c)
-  (/ (+ (- b) (delta a b c)) (* 2 a)
-     ))
+  (let ((computed-delta (delta a b c)))
+  (if (null? computed-delta)
+    #f
+    (/ (+ (- b) computed-delta) (* 2 a)
+       ))))
 
 (define (root2 a b c)
-  (/ (- (- b) (delta a b c)) (* 2 a)
-     ))
-
-(ndisplay (root1 1 (- 4) 4))
-(ndisplay (root2 1 (- 4) 4))
-;
-;(define root2
-;  (lambda (a b c)
-;    YOUR-CODE-HERE))
+  (let ((computed-delta (delta a b c)))
+  (if (null? computed-delta)
+    #f
+    (/ (- (- b) computed-delta) (* 2 a)
+       ))))
 
 ;;; complete these procedures and show some test cases
+(ndisplay (root1 1 (- 4) 4))
+(ndisplay (root2 1 (- 4) 4))
+(ndisplay (root1 5 3 6))
+(ndisplay (root2 5 3 6))
+
 ;
 ;;; Problem 3
 ;
