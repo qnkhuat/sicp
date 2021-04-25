@@ -26,14 +26,19 @@
 (l "util.scm")
 (define f "basebot.scm")
 
-(define ndisplay (lambda (x) (
-    (display(x))
-    (newline))))
+(define (display-expect result expect )
+    (let ((result (if (null? result) "null" result))
+          (expect (if (null? expect) "null" expect)))
+    (display "Result: ")
+    (display result)
+    (display "\tExpect: ")
+    (display expect)
+    (newline)
+    ))
 
-(define (ndisplay x) 
-                      (display x)
-                      (newline)
-                      )
+(define (ndisplay x)
+  (display x)
+  (newline))
 
 (define square
   (lambda (x) (* x x)))
@@ -50,14 +55,14 @@
 
 ;; you need to complete this procedure, then show some test cases
 
-(ndisplay (position 0 0 0 0))
-(ndisplay (position 0 0 20 0))
-(ndisplay (position 0 5 10 10))
-(ndisplay (position 2 2 2 2))
-(ndisplay (position 5 5 5 5))
-
+(display-expect (position 0 0 0 0) 0)
+(display-expect (position 0 0 20 0) 20)
+(display-expect (position 0 5 10 10) 60)
+(display-expect (position 2 2 2 2) 10)
+(display-expect (position 5 5 5 5) "185/2")
 
 ;; Problem 2
+(ndisplay "Problem 2")
 
 (define (delta a b c)
   (square-root (- (square b) (* 4 a c))))
@@ -65,94 +70,129 @@
 (define (root1 a b c)
   (let ((computed-delta (delta a b c)))
   (if (null? computed-delta)
-    #f
-    (/ (+ (- b) computed-delta) (* 2 a)
-       ))))
+    nil 
+    (/ (- (- b) computed-delta) (* 2 a)))))
 
 (define (root2 a b c)
   (let ((computed-delta (delta a b c)))
   (if (null? computed-delta)
-    #f
-    (/ (- (- b) computed-delta) (* 2 a)
-       ))))
+    nil
+    (/ (+ (- b) computed-delta) (* 2 a)))))
 
-;;; complete these procedures and show some test cases
-(ndisplay (root1 1 (- 4) 4))
-(ndisplay (root2 1 (- 4) 4))
-(ndisplay (root1 5 3 6))
-(ndisplay (root2 5 3 6))
+(define (bigger-root a b c)
+  (let ((result1 (root1 a b c))
+        (result2 (root2 a b c)))
+    (cond ((or (null? result1) (null? result2)) nil)
+          ((> result1 result2) result1)
+          (else result2))))
 
-;
+;; complete these procedures and show some test cases
+(display-expect (root1 1 (- 4) 4) 2)
+(display-expect (root2 1 (- 4) 4) 2)
+(display-expect (root1 5 3 6) nil)
+(display-expect (root2 5 3 6) nil)
+
+
 ;;; Problem 3
-;
-;(define time-to-impact
-;  (lambda (vertical-velocity elevation)
-;    YOUR-CODE-HERE))
-;
+(ndisplay "Problem 3")
+
+(define (time-to-impact vertical-velocity elevation)
+  (let ((time (bigger-root(/ (- gravity) 2) vertical-velocity elevation)))
+    (cond ((null? time) nil)
+          ((< time 0) nil)
+          (else time))))
+        
+    
+(display-expect (time-to-impact 10 0) 2.0482) ;; => 2.04082
+(display-expect (time-to-impact 20 0) 4.08163) ;; => 4.08163
 ;;; Note that if we want to know when the ball drops to a particular height r 
 ;;; (for receiver), we have
 ;
-;(define time-to-height
-;  (lambda (vertical-velocity elevation target-elevation)
-;    YOUR-CODE-HERE))
-;
-;;; Problem 4
-;
-;;; once we can solve for t_impact, we can use it to figure out how far the ball went
-;
-;;; conversion procedure
-;(define degree2radian
-;  (lambda (deg)
-;    (/ (*  deg pi) 180.)))
-;
-;(define travel-distance-simple
-;  (lambda (elevation velocity angle)
-;    YOUR-CODE-HERE))
-;
-;;; let's try this out for some example values.  Note that we are going to 
-;;; do everything in metric units, but for quaint reasons it is easier to think
-;;; about things in English units, so we will need some conversions.
-;
-;(define meters-to-feet
-;  (lambda (m)
-;    (/ (* m 39.6) 12)))
-;
-;(define feet-to-meters
-;  (lambda (f)
-;    (/ (* f 12) 39.6)))
-;
-;(define hours-to-seconds
-;  (lambda (h)
-;    (* h 3600)))
-;
-;(define seconds-to-hours
-;  (lambda (s)
-;    (/ s 3600)))
-;
-;;; what is time to impact for a ball hit at a height of 1 meter
-;;; with a velocity of 45 m/s (which is about 100 miles/hour)
-;;; at an angle of 0 (straight horizontal)
-;;; at an angle of (/ pi 2) radians or 90 degrees (straight vertical)
-;;; at an angle of (/ pi 4) radians or 45 degrees
-;
-;;; what is the distance traveled in each case?
-;;; record both in meters and in feet
-;
-;
-;;; Problem 5
-;
-;;; these sound pretty impressive, but we need to look at it more carefully
-;
-;;; first, though, suppose we want to find the angle that gives the best
-;;; distance
-;;; assume that angle is between 0 and (/ pi 2) radians or between 0 and 90
-;;; degrees
-;
-;(define alpha-increment 0.01)
-;
-;(define find-best-angle
-;  (lambda (velocity elevation)
-;    YOUR-CODE-HERE))
+(define (time-to-height vertical-velocity elevation target-elevation)
+  (let ((diff-height (- elevation target-elevation)))
+    (time-to-impact vertical-velocity diff-height)))
+
+(display-expect (time-to-height 10 0 0) 2.0482) ;; => 2.04082
+(display-expect (time-to-height 10 20 10) 2.77598) ;; => 2.77598
+(display-expect (time-to-height 10 20 50) nil);; => nil
+
+;; Problem 4
+
+(ndisplay "problem 4")
+; once we can solve for t_impact, we can use it to figure out how far the ball went
+
+;; conversion procedure
+(define degree2radian
+  (lambda (deg)
+    (/ (*  deg pi) 180.)))
+
+(define (to-horizontal x alpha)
+  (* (cos alpha) x))
+
+(define (to-vertical x alpha)
+  (* (sin alpha) x))
+
+(define (travel-distance-simple elevation velocity angle)
+  (let ((time-to-ground (time-to-impact (to-vertical velocity (degree2radian angle)) elevation)))
+    (* (to-horizontal velocity (degree2radian angle)) time-to-ground)))
+
+;; let's try this out for some example values.  Note that we are going to 
+;; do everything in metric units, but for quaint reasons it is easier to think
+;; about things in English units, so we will need some conversions.
+
+(define meters-to-feet
+  (lambda (m)
+    (/ (* m 39.6) 12)))
+
+(define feet-to-meters
+  (lambda (f)
+    (/ (* f 12) 39.6)))
+
+(define hours-to-seconds
+  (lambda (h)
+    (* h 3600)))
+
+(define seconds-to-hours
+  (lambda (s)
+    (/ s 3600)))
+
+;; what is time to impact for a ball hit at a height of 1 meter
+;; with a velocity of 45 m/s (which is about 100 miles/hour)
+;; at an angle of 0 (straight horizontal)
+;; at an angle of (/ pi 2) radians or 90 degrees (straight vertical)
+;; at an angle of (/ pi 4) radians or 45 degrees
+
+;; what is the distance traveled in each case?
+;; record both in meters and in feet
+
+(display-expect (travel-distance-simple 1 45 0) 20.32)
+(display-expect (travel-distance-simple 1 45 45) 207.5)
+(display-expect (travel-distance-simple 1 45 90) 0)
+
+;; Problem 5
+
+;; these sound pretty impressive, but we need to look at it more carefully
+
+;; first, though, suppose we want to find the angle that gives the best
+;; distance
+;; assume that angle is between 0 and (/ pi 2) radians or between 0 and 90
+;; degrees
+(ndisplay "Problem 5")
+(define alpha-increment 0.01)
+
+(define (sequence low high inc)
+  (if (> low  high)
+    nil
+    (cons low (sequence (+ low inc) high inc))))
+
+
+(define (find-best-angle velocity elevation)
+  (let ((list-of-angle (sequence 0 90 alpha-increment)))
+    (reduce (lambda (x y) (if (< (travel-distance-simple elevation velocity x) (travel-distance-simple elevation velocity y))
+                            y x )) nil list-of-angle)))
+
+(display-expect (find-best-angle 45 1) 45)
+
 ;
 ;;; find best angle
 ;;; try for other velocities
