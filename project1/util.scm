@@ -19,3 +19,7 @@
         ((= n 0) 0)
         (else (square-root-guess n))))
 
+(define (sequence low high inc)
+  (if (> low  high)
+    nil
+    (cons low (sequence (+ low inc) high inc))))

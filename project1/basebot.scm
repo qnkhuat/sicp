@@ -180,105 +180,121 @@
 (ndisplay "Problem 5")
 (define alpha-increment 0.01)
 
-(define (sequence low high inc)
-  (if (> low  high)
-    nil
-    (cons low (sequence (+ low inc) high inc))))
-
-
 (define (find-best-angle velocity elevation)
   (let ((list-of-angle (sequence 0 90 alpha-increment)))
     (reduce (lambda (x y) (if (< (travel-distance-simple elevation velocity x) (travel-distance-simple elevation velocity y))
                             y x )) nil list-of-angle)))
 
+;; find best angle
+;; try for other velocities
+;; try for other heights
 (display-expect (find-best-angle 45 1) 45)
 
-;
-;;; find best angle
-;;; try for other velocities
-;;; try for other heights
-;
-;;; Problem 6
-;
-;;; problem is that we are not accounting for drag on the ball (or on spin 
-;;; or other effects, but let's just stick with drag)
-;;;
-;;; Newton's equations basically say that ma = F, and here F is really two 
-;;; forces.  One is the effect of gravity, which is captured by mg.  The
-;;; second is due to drag, so we really have
-;;;
-;;; a = drag/m + gravity
-;;;
-;;; drag is captured by 1/2 C rho A vel^2, where
-;;; C is the drag coefficient (which is about 0.5 for baseball sized spheres)
-;;; rho is the density of air (which is about 1.25 kg/m^3 at sea level 
-;;; with moderate humidity, but is about 1.06 in Denver)
-;;; A is the surface area of the cross section of object, which is pi D^2/4 
-;;; where D is the diameter of the ball (which is about 0.074m for a baseball)
-;;; thus drag varies by the square of the velocity, with a scaling factor 
-;;; that can be computed
-;
-;;; We would like to again compute distance , but taking into account 
-;;; drag.
-;;; Basically we can rework the equations to get four coupled linear 
-;;; differential equations
-;;; let u be the x component of velocity, and v be the y component of velocity
-;;; let x and y denote the two components of position (we are ignoring the 
-;;; third dimension and are assuming no spin so that a ball travels in a plane)
-;;; the equations are
-;;;
-;;; dx/dt = u
-;;; dy/dt = v
-;;; du/dt = -(drag_x/m + g_x)
-;;; dv/dt = -(drag_y/m + g_y)
-;;; we have g_x = - and g_y = - gravity
-;;; to get the components of the drag force, we need some trig.
-;;; let speeed = (u^2+v^2)^(1/2), then
-;;; drag_x = - drag * u /speed
-;;; drag_y = - drag * v /speed
-;;; where drag = beta speed^2
-;;; and beta = 1/2 C rho pi D^2/4
-;;; note that we are taking direction into account here
-;
-;;; we need the mass of a baseball -- which is about .15 kg.
-;
-;;; so now we just need to write a procedure that performs a simple integration
-;;; of these equations -- there are more sophisticated methods but a simple one 
-;;; is just to step along by some step size in t and add up the values
-;
-;;; dx = u dt
-;;; dy = v dt
-;;; du = - 1/m speed beta u dt
-;;; dv = - (1/m speed beta v + g) dt
-;
-;;; initial conditions
-;;; u_0 = V cos alpha
-;;; v_0 = V sin alpha
-;;; y_0 = h
-;;; x_0 = 0
-;
-;;; we want to start with these initial conditions, then take a step of size dt
-;;; (which could be say 0.1) and compute new values for each of these parameters
-;;; when y reaches the desired point (<= 0) we stop, and return the distance (x)
-;
-;(define drag-coeff 0.5)
-;(define density 1.25)  ; kg/m^3
-;(define mass .145)  ; kg
-;(define diameter 0.074)  ; m
-;(define beta (* .5 drag-coeff density (* 3.14159 .25 (square diameter))))
-;
-;(define integrate
-;  (lambda (x0 y0 u0 v0 dt g m beta)
-;    YOUR-CODE-HERE))
-;
-;(define travel-distance
-;  YOUR-CODE-HERE)
-;
-;
-;;; RUN SOME TEST CASES
-;
-;;; what about Denver?
-;
+;; Problem 6
+
+(ndisplay "Problem 6")
+
+;; problem is that we are not accounting for drag on the ball (or on spin 
+;; or other effects, but let's just stick with drag)
+;;
+;; Newton's equations basically say that ma = F, and here F is really two 
+;; forces.  One is the effect of gravity, which is captured by mg.  The
+;; second is due to drag, so we really have
+;;
+;; a = drag/m + gravity
+;;
+;; drag is captured by 1/2 C rho A vel^2, where
+;; C is the drag coefficient (which is about 0.5 for baseball sized spheres)
+;; rho is the density of air (which is about 1.25 kg/m^3 at sea level 
+;; with moderate humidity, but is about 1.06 in Denver)
+;; A is the surface area of the cross section of object, which is pi D^2/4 
+;; where D is the diameter of the ball (which is about 0.074m for a baseball)
+;; thus drag varies by the square of the velocity, with a scaling factor 
+;; that can be computed
+
+;; We would like to again compute distance , but taking into account 
+;; drag.
+;; Basically we can rework the equations to get four coupled linear 
+;; differential equations
+;; let u be the x component of velocity, and v be the y component of velocity
+;; let x and y denote the two components of position (we are ignoring the 
+;; third dimension and are assuming no spin so that a ball travels in a plane)
+;; the equations are
+;;
+;; dx/dt = u
+;; dy/dt = v
+;; du/dt = -(drag_x/m + g_x)
+;; dv/dt = -(drag_y/m + g_y)
+;; we have g_x = - and g_y = - gravity
+;; to get the components of the drag force, we need some trig.
+;; let speeed = (u^2+v^2)^(1/2), then
+;; drag_x = - drag * u /speed
+;; drag_y = - drag * v /speed
+;; where drag = beta speed^2
+;; and beta = 1/2 C rho pi D^2/4
+;; note that we are taking direction into account here
+
+;; we need the mass of a baseball -- which is about .15 kg.
+
+;; so now we just need to write a procedure that performs a simple integration
+;; of these equations -- there are more sophisticated methods but a simple one 
+;; is just to step along by some step size in t and add up the values
+
+;; dx = u dt
+;; dy = v dt
+;; du = - 1/m speed beta u dt
+;; dv = - (1/m speed beta v + g) dt
+
+;; initial conditions
+;; u_0 = V cos alpha
+;; v_0 = V sin alpha
+;; y_0 = h
+;; x_0 = 0
+
+;; we want to start with these initial conditions, then take a step of size dt
+;; (which could be say 0.1) and compute new values for each of these parameters
+;; when y reaches the desired point (<= 0) we stop, and return the distance (x)
+
+(define drag-coeff 0.5)
+(define density 1.25)  ; kg/m^3
+(define mass .145)  ; kg
+(define diameter 0.074)  ; m
+(define beta (* .5 drag-coeff density (* 3.14159 .25 (square diameter))))
+
+(define (integrate x0 y0 u0 v0 dt g m beta) ; => return change x y
+  (let ((dx (* u0 dt))
+        (dy (* v0 dt))
+        (du (* (/ (- 1) m)
+               beta 
+               (square-root (+ (square u0) (square v0)))
+               u0
+               dt))
+        (dv (* (- 1)
+               (+ (* (/ 1 m)
+                     (square-root (+ (square u0) (square v0)))
+                     v0
+                     beta)
+                  g)
+               dt)))
+  (if (< (+ y0 dy) 0)
+    (+ x0 dx)
+    (integrate (+ x0 dx) (+ y0 dy) (+ u0 du) (+ v0 dv) dt g m beta))))
+
+
+(define (travel-distance elevation velocity angle) ; => computes distance traveled
+  (let ((u0 (* velocity (cos (degree2radian angle))))
+        (v0 (* velocity (sin (degree2radian angle)))))
+    (integrate 0 elevation u0 v0 0.01 gravity mass beta)))
+
+(display-expect (travel-distance 1 45 30) 90.74)
+(display-expect (travel-distance 1 45 45) 92.23)
+(display-expect (travel-distance 1 45 60) 76.23)
+
+
+;; RUN SOME TEST CASES
+
+;; what about Denver?
+
 ;;; Problem 7
 ; 
 ;;; now let's turn this around.  Suppose we want to throw the ball.  The same
