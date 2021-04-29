@@ -299,5 +299,82 @@
 
 (define q (queens 8))
 
+; EXAMPLE : A Picture language
+
+(define wave2 (beside wave (flip-vert wave)))
+(define wave4 (below wave2 wave2))
+
+(define (flipped-paris painter)
+  (let ((painter2 (beside painter (flip-vert painter))))
+    (below painter2 painter2)))
+
+(define wave4 (flipped-pairs wave))
+
+(define (right-split painter n)
+  (if (= n 0)
+    painter
+    (let ((smaller (right-split painter (- n 1))))
+      (beside painter (below smaller smaller)))))
+
+(define (corner-split painter n)
+  (if (= n 0)
+    painter
+    (let ((up (up-split painter (- n 1)))
+          (right (right-split paitner (- n 1)))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
