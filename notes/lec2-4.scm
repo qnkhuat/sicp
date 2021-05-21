@@ -1,9 +1,9 @@
 ; Abstract Data
 
+(l "util.scm")
 (define f "lec2-4.scm")
 (define l load)
 
-(l "util.scm")
 
 ; Complex number in rectangle form which stores real part and imagine part as 2 point
 ; on 2 axis system
@@ -333,7 +333,7 @@
   dispatch)
 
 (define (apply-generic op arg) (arg op))
-
+(+ 3 4)
 
 
 
