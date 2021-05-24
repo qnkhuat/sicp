@@ -1,0 +1,1 @@
+scheme --load prisoner.scm
