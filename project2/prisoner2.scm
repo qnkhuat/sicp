@@ -187,8 +187,6 @@
   )
 
 ; Problem 12
-
-
 (define (add-case case play)
   (cond ((equal? play "c")
          (list (+ (list-ref case 0) 1)
@@ -200,9 +198,6 @@
                (+ (list-ref case 1) 1)
                (+ (list-ref case 2) 1)))
         (else case)))
-
-
-
 
 (define (make-history-summary history0 history1 history2)
   (define intitial-case (list 0 0 0))
@@ -220,16 +215,14 @@
               (else nil)))))
   (make-iter (map list history0 history1 history2) intitial-case intitial-case intitial-case))
 
-(define zipped-history (map list 
-  (list "c" "c" "d" "d" "c" "d" "c" "c")
-  (list "c" "c" "c" "d" "d" "c" "d" "c")
-  (list "c" "c" "d" "d" "d" "c" "c" "c")))
-
-
 (make-history-summary 
   (list "c" "c" "d" "d" "c" "d" "c" "c")
   (list "c" "c" "c" "d" "d" "c" "d" "c")
   (list "c" "c" "d" "d" "d" "c" "c" "c"))
+
+
+; Problem 13
+
 
 
 ;; in expected-values: #f = don't care 
