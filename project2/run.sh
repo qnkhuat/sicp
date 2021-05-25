@@ -1,1 +1,1 @@
-scheme --load prisoner.scm
+scheme --load prisoner2.scm

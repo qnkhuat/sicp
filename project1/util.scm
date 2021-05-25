@@ -23,3 +23,18 @@
   (if (> low  high)
     nil
     (cons low (sequence (+ low inc) high inc))))
+
+(define (display-expect result expect )
+    (let ((result (if (null? result) "null" result))
+          (expect (if (null? expect) "null" expect)))
+    (display "Result: ")
+    (display result)
+    (display "\tExpect: ")
+    (display expect)
+    (newline)
+    ))
+
+(define (ndisplay x)
+  (display x)
+  (newline))
+

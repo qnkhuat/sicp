@@ -26,19 +26,6 @@
 (l "util.scm")
 (define f "basebot.scm")
 
-(define (display-expect result expect )
-    (let ((result (if (null? result) "null" result))
-          (expect (if (null? expect) "null" expect)))
-    (display "Result: ")
-    (display result)
-    (display "\tExpect: ")
-    (display expect)
-    (newline)
-    ))
-
-(define (ndisplay x)
-  (display x)
-  (newline))
 
 (define square
   (lambda (x) (* x x)))
