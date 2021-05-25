@@ -1,1 +1,1 @@
-scheme --load lec2-5.scm
+scheme --load lec3-1.scm
