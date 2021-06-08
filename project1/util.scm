@@ -12,12 +12,12 @@
   (define (square-root-guess guess)
     (let ((new-guess (/ (+ (/ n guess) guess) 2)))
       (if (good-enough? new-guess guess)
-        new-guess
-        (square-root-guess new-guess))
+	new-guess
+	(square-root-guess new-guess))
       )) 
   (cond ((< n 0) nil)
-        ((= n 0) 0)
-        (else (square-root-guess n))))
+	((= n 0) 0)
+	(else (square-root-guess n))))
 
 (define (sequence low high inc)
   (if (> low  high)
@@ -25,8 +25,8 @@
     (cons low (sequence (+ low inc) high inc))))
 
 (define (display-expect result expect )
-    (let ((result (if (null? result) "null" result))
-          (expect (if (null? expect) "null" expect)))
+  (let ((result (if (null? result) "null" result))
+	(expect (if (null? expect) "null" expect)))
     (display "Result: ")
     (display result)
     (display "\tExpect: ")
