@@ -13,7 +13,6 @@
       (map-stream proc (tail s)))))
 
 
-
 (define (flatten stream-of-streams)
   (fold-left
     append
@@ -90,25 +89,63 @@
 (display-stream z) ; => 
 
 
+; Infnite streams
+
+(define (intergers-from n)
+  (cons-stream n (intergers-from (+ n 1))))
+
+(define intergers (intergers-from 1))
 
 
+(define (sieve s)
+  (cons-stream
+    (head s)
+    (sieve (filter
+             (lambda (x)
+               (not
+                 (divisible? x (head s))))
+             (tail s)
+             ))))
+
+(define primes
+  (sieve (intergers-from 2)))
+
+(define (add-streams s1 s2)
+  (cond ((empty-streams? s1 ) s2)
+        ((empty-streams? s2) s1)
+        (else 
+          (cons-stream
+            (+ (head s1) (head s2))
+            (add-streams (tail s1) (tail s2))))))
+
+(define fibs
+  (cons-stream 0
+               (cons-stream 1
+                            (add-streams fibs (tail fibs)))))
+
+; Intevral
+(define (intergral s initial-value dt)
+  (define int
+    (cons-stream
+      initial-value
+      (add-streams (scale-stream dt s) int)))
+    int)
 
 
+(define (scale-stream m s)
+	(cons-stream (* m (head s)) 
+		     (scale-stream m (tail s))))
 
+(stream-ref intergers 10)
 
+(define scaled-intergers (scale-stream 2 intergers))
 
+(stream-ref scaled-intergers 10)
 
+(define y
+  (intergeral dy 1 .0001))
 
-
-
-
-
-
-
-
-
-
-
+(define dy (map square y))
 
 
 
